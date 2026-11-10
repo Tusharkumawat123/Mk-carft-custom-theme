@@ -1,0 +1,260 @@
+<section
+  class="mk-promise"
+  data-mk-promise
+  style="
+    --mk-promise-pt: {{ section.settings.padding_top }}px;
+    --mk-promise-pb: {{ section.settings.padding_bottom }}px;
+  "
+>
+
+  <div class="mk-promise__inner">
+
+    {% for block in section.blocks %}
+
+      <div class="mk-promise__item" {{ block.shopify_attributes }}>
+
+        {% if block.settings.icon != blank %}
+          <div class="mk-promise__icon">
+            {{ block.settings.icon }}
+          </div>
+        {% endif %}
+
+        <div>
+          <strong>{{ block.settings.title }}</strong>
+
+          {% if block.settings.text != blank %}
+            <span>{{ block.settings.text }}</span>
+          {% endif %}
+        </div>
+
+      </div>
+
+    {% endfor %}
+
+  </div>
+
+</section>
+
+<style>
+
+  .mk-promise {
+    padding-top: var(--mk-promise-pt);
+    padding-bottom: var(--mk-promise-pb);
+    background: #3f2a1e;
+    color: #fff;
+  }
+
+  .mk-promise__inner {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 0 30px;
+    display: flex;
+    justify-content: space-between;
+    gap: 30px;
+  }
+
+  .mk-promise__item {
+    flex: 1 1 25%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 13px;
+    opacity: 0;
+    transform: translateY(15px);
+    transition: opacity .5s ease, transform .5s ease;
+  }
+
+  .mk-promise.is-visible .mk-promise__item {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .mk-promise.is-visible .mk-promise__item:nth-child(2) {
+    transition-delay: .1s;
+  }
+
+  .mk-promise.is-visible .mk-promise__item:nth-child(3) {
+    transition-delay: .2s;
+  }
+
+  .mk-promise.is-visible .mk-promise__item:nth-child(4) {
+    transition-delay: .3s;
+  }
+
+  .mk-promise__icon {
+    font-size: 24px;
+    color: #d2a46d;
+  }
+
+  .mk-promise__item strong {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .mk-promise__item span {
+    display: block;
+    margin-top: 3px;
+    font-size: 11px;
+    color: #d5c6b9;
+  }
+
+  @media (max-width: 749px) {
+
+    .mk-promise__inner {
+      flex-wrap: wrap;
+      padding: 0 20px;
+    }
+
+    .mk-promise__item {
+      flex: 1 1 45%;
+      justify-content: flex-start;
+    }
+
+  }
+
+</style>
+
+<script>
+(function () {
+
+  function initMKPromise() {
+
+    document.querySelectorAll('[data-mk-promise]').forEach(function (section) {
+
+      if (section.dataset.initialized === 'true') return;
+
+      section.dataset.initialized = 'true';
+
+      if (!('IntersectionObserver' in window)) {
+        section.classList.add('is-visible');
+        return;
+      }
+
+      var observer = new IntersectionObserver(function (entries) {
+
+        entries.forEach(function (entry) {
+
+          if (entry.isIntersecting) {
+
+            entry.target.classList.add('is-visible');
+
+            observer.unobserve(entry.target);
+
+          }
+
+        });
+
+      }, {
+        threshold: 0.15
+      });
+
+      observer.observe(section);
+
+    });
+
+  }
+
+  document.addEventListener('DOMContentLoaded', initMKPromise);
+
+  document.addEventListener(
+    'shopify:section:load',
+    initMKPromise
+  );
+
+})();
+</script>
+
+{% schema %}
+{
+  "name": "MK Promise Bar",
+  "max_blocks": 4,
+  "blocks": [
+    {
+      "type": "promise",
+      "name": "Promise",
+      "settings": [
+        {
+          "type": "text",
+          "id": "icon",
+          "label": "Icon",
+          "default": "✦"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Handcrafted"
+        },
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text",
+          "default": "Made with care"
+        }
+      ]
+    }
+  ],
+  "settings": [
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 10,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 28
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 10,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 28
+    }
+  ],
+  "presets": [
+    {
+      "name": "MK Promise Bar",
+      "blocks": [
+        {
+          "type": "promise",
+          "settings": {
+            "icon": "✦",
+            "title": "Handcrafted",
+            "text": "Made by skilled artisans"
+          }
+        },
+        {
+          "type": "promise",
+          "settings": {
+            "icon": "◇",
+            "title": "Natural Wood",
+            "text": "Beautiful Kadam wood"
+          }
+        },
+        {
+          "type": "promise",
+          "settings": {
+            "icon": "♡",
+            "title": "Made in India",
+            "text": "Rooted in Indian craft"
+          }
+        },
+        {
+          "type": "promise",
+          "settings": {
+            "icon": "↗",
+            "title": "Secure Delivery",
+            "text": "Carefully packed"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
